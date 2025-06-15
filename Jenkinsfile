@@ -12,7 +12,9 @@ pipeline {
             steps {
                 script {
                     echo "Pulling source code from GitHub"
-                    git branch: 'main', url: 'git@github.com:seunayolu/pat_webserver.git'
+                    withCredentials([string(credentialsId: 'git-pat', variable: 'GIT_TOKEN')]) {
+                        git branch: 'main', url: "https://${GIT_TOKEN}@github.com/seunayolu/pat_webserver.git"
+                    }
                 }
             }
         }
