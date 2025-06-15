@@ -17,8 +17,8 @@ cd /tmp/webfiles
 echo
 
 wget https://www.tooplate.com/zip-templates/2133_moso_interior.zip > /dev/null
-unzip 2132_clean_work.zip > /dev/null
-sudo cp -r 2132_clean_work/* /var/www/html/
+unzip 2133_moso_interior.zip > /dev/null
+sudo cp -r 2133_moso_interior/* /var/www/html/
 echo
 
 # Bounce Service
