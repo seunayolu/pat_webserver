@@ -1,0 +1,24 @@
+pipeline {
+    agent {
+        label 'node-01'
+    }
+
+    environment {
+        Instance_IP = '172.31.38.21'
+        ServerName = 'ubuntu'
+        AWS_REGION = 'eu-west-2'
+        ECR_REPO = 'pat-jenkins-repo'
+        REGISTRY_URL = "442042522885.dkr.ecr.eu-west-2.amazonaws.com"
+    }
+
+    stages {
+        stage ('docker_build') {
+            steps {
+                script {
+                    echo "Building Moodle Docker Image"
+                    sh "docker build -t ${env.REGISTRY_URL}/${env.ECR_REPO}:${BUILD_NUMBER} ."
+                }
+            }
+        }
+    }
+}
