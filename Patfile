@@ -20,5 +20,17 @@ pipeline {
                 }
             }
         }
+
+        stage ('push_image_to_ecr') {
+            steps {
+                script {
+                    echo "Pushing Moodle Docker Image to ECR"
+                    withAWS(region: "${env.AWS_REGION}", credentials: 'AWSACCESS') {
+                        sh "aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.REGISTRY_URL}"
+                        sh "docker push ${env.REGISTRY_URL}/${env.ECR_REPO}:${BUILD_NUMBER}"
+                    }
+                }
+            }
+        }
     }
 }
