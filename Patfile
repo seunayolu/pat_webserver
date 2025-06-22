@@ -45,6 +45,7 @@ pipeline {
                            # Pulling Images from ECR
                            ssh -o StrictHostKeyChecking=no ${ServerName}@${Instance_IP} "
                               export IMAGE_NAME=${env.REGISTRY_URL}/${env.ECR_REPO}:${BUILD_NUMBER} && \
+                              aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.REGISTRY_URL} && \
                               docker compose -f /home/ubuntu/compose.yaml up -d
                             "
                         """
