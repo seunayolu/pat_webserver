@@ -4,7 +4,7 @@ pipeline {
     }
 
     environment {
-        Instance_IP = '172.31.38.21'
+        Instance_IP = '172.31.37.45'
         ServerName = 'ubuntu'
         AWS_REGION = 'eu-west-2'
         ECR_REPO = 'pat-jenkins-repo'
@@ -28,6 +28,26 @@ pipeline {
                     withAWS(region: "${env.AWS_REGION}", credentials: 'AWSACCESS') {
                         sh "aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.REGISTRY_URL}"
                         sh "docker push ${env.REGISTRY_URL}/${env.ECR_REPO}:${BUILD_NUMBER}"
+                    }
+                }
+            }
+        }
+
+        stage ('deploy_to_ec2') {
+            steps {
+                script {
+                    echo "Deploying docker compose to EC2 Server"
+                     sshagent(['ec2sshkey']) {
+                        sh """
+                           # Copy docker compose file to EC2
+                           scp -o StrictHostKeyChecking=no compose.yaml ${ServerName}@${Instance_IP}:/home/ubuntu
+
+                           # Pulling Images from ECR
+                           ssh -o StrictHostKeyChecking=no ${ServerName}@${Instance_IP} "
+                              export IMAGE_NAME=${env.REGISTRY_URL}/${env.ECR_REPO}:${BUILD_NUMBER} && \
+                              docker compose -f /home/ubuntu/compose.yaml up -d
+                            "
+                        """
                     }
                 }
             }
